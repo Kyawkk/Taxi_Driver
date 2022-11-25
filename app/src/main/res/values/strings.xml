@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Taxi Driver</string>
+    <string name="web_client_id">791924952695-h1b2csmtucp9sf0bu4e56757i9fm2qkf.apps.googleusercontent.com</string>
+    <string name="search">Search</string>
+
+    <!-- Drawer Toggle Values -->
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+</resources>
