@@ -11,9 +11,7 @@
         <item name="colorOnSecondary">@color/black</item>
 
         <!-- Status bar color. -->
-        <!--<item name="android:windowTranslucentStatus">false</item>-->
         <item name="android:windowActivityTransitions">true</item>
-        <!--<item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
         <!-- Customize your theme here. -->
 
         <item name="dividerColor">@color/dividerColorDark</item>

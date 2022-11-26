@@ -26,7 +26,7 @@
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Loading failed!"
+            android:text="Sign in failed!"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="@+id/imageView5"
             app:layout_constraintStart_toStartOf="@+id/imageView5"
@@ -38,7 +38,7 @@
         style="@style/TextAppearance.MaterialComponents.Subtitle1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="16dp"
         android:textAlignment="center"
         android:text="Could not perform this request with your google account. Please try loggin in again." />
 

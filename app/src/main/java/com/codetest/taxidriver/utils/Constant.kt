@@ -53,9 +53,6 @@ object Constant {
                             }
                         }
 
-                        override fun onLocationAvailability(p0: LocationAvailability) {
-                            super.onLocationAvailability(p0)
-                        }
                     },Looper.getMainLooper())
             }
             else{
@@ -71,8 +68,8 @@ object Constant {
 
     private fun initializeLocationRequest() {
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.setInterval(3000)
-        locationRequest.setFastestInterval(2000)
+        locationRequest.interval = 3000
+        locationRequest.fastestInterval = 2000
     }
 
     private fun turnOnGPS(activity: Activity) {

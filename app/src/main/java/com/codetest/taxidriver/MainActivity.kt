@@ -6,18 +6,19 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import android.database.MatrixCursor
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.Window
 import android.view.animation.AnimationUtils
 import android.widget.CursorAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.cursoradapter.widget.SimpleCursorAdapter
@@ -34,7 +35,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialFadeThrough
 import com.google.firebase.auth.FirebaseAuth
@@ -65,13 +65,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+        with(window){
+            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+            enterTransition = MaterialFadeThrough()
+            exitTransition = MaterialFadeThrough()
+        }
+
         setContentView(binding.root)
-
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
-        //set enter and exit transition
-        window.enterTransition = MaterialFadeThrough()
-        window.exitTransition = MaterialFadeThrough()
 
         //initialize firestore
         initializeFireStore()
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         loadDataFromFireStore()
 
         val drawerLayout = binding.drawerLayout
-        toggle = ActionBarDrawerToggle(this,drawerLayout,R.string.open,R.string.close)
+        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -98,18 +99,19 @@ class MainActivity : AppCompatActivity() {
         swipeRefreshLayoutAction()
 
         // shared preferences initialization
-        preferences = getSharedPreferences("shared_pref",Context.MODE_PRIVATE )
+        preferences = getSharedPreferences("shared_pref", Context.MODE_PRIVATE)
         editor = preferences.edit()
     }
 
     private fun initializeFireStore() {
         val signInOptions = GoogleSignInOptions.Builder(
-            GoogleSignInOptions.DEFAULT_SIGN_IN)
+            GoogleSignInOptions.DEFAULT_SIGN_IN
+        )
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
-        googleSignInClient = GoogleSignIn.getClient(this,signInOptions)
+        googleSignInClient = GoogleSignIn.getClient(this, signInOptions)
 
         firebaseAuth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
@@ -119,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigationViewMenuItemAction() {
         binding.navigationView.setNavigationItemSelectedListener {
-            when (it.itemId){
+            when (it.itemId) {
                 R.id.log_out -> logOutAccount()
             }
             true
@@ -134,13 +136,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showLoading(){
+    private fun showLoading() {
         binding.swipeRefreshLayout.isEnabled = false
-
         binding.loadingLayout.visibility = View.VISIBLE
     }
 
-    private fun hideLoading(){
+    private fun hideLoading() {
         binding.loadingLayout.visibility = View.GONE
     }
 
@@ -151,17 +152,15 @@ class MainActivity : AppCompatActivity() {
         db.collection("customers")
             .get()
             .addOnCompleteListener {
-                if (it.isSuccessful){
-                    for (customer in it.result){
+                if (it.isSuccessful) {
+                    for (customer in it.result) {
 
                         val data = customer.data
-                        println("name: $data")
                         val name = data.get("name").toString()
                         val phone = data.get("phone").toString()
                         val latLog = data.get("latlog") as GeoPoint
                         val customerPhoto = data.get("customerphoto").toString()
-
-                        customers.add(Customer(name,phone,latLog,customerPhoto))
+                        customers.add(Customer(name, phone, latLog, customerPhoto))
                     }
 
                     //check refresh layout
@@ -169,16 +168,13 @@ class MainActivity : AppCompatActivity() {
                         binding.swipeRefreshLayout.isRefreshing = false
 
                     // get current location and pass it to adapter to show in items
-                    Constant.getCurrentLocation(this,{
-                        // hide loading
+                    Constant.getCurrentLocation(this, {
                         hideLoading()
-                        //set up recyclerview
-                        setUpCustomerRecyclerView(customers,it)
+                        setUpCustomerRecyclerView(customers, it)
                     })
                 }
             }
             .addOnFailureListener {
-
                 //stop refreshing
                 if (binding.swipeRefreshLayout.isRefreshing)
                     binding.swipeRefreshLayout.isRefreshing = false
@@ -189,22 +185,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showErrorSnackBar() {
-        val snackBar = Snackbar.make(window.decorView,"Fetching data from server failed!",Snackbar.LENGTH_SHORT)
-        snackBar.setAction("try again",object : View.OnClickListener{
+        val snackBar = Snackbar.make(
+            window.decorView,
+            "Fetching data from server failed!",
+            Snackbar.LENGTH_SHORT
+        )
+        snackBar.setAction("try again", object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 loadDataFromFireStore()
             }
         })
     }
 
-    private fun setUpCustomerRecyclerView(customers: MutableList<Customer>, currentLocation: LatLng) {
+    private fun setUpCustomerRecyclerView(
+        customers: MutableList<Customer>,
+        currentLocation: LatLng
+    ) {
 
         //set recyclerview layout animation
-        val layoutAnim = AnimationUtils.loadLayoutAnimation(this,R.anim.layout_anim)
+        val layoutAnim = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_anim)
         binding.customerRv.layoutAnimation = layoutAnim
         binding.customerRv.itemAnimator = DefaultItemAnimator()
 
-        adapter = CustomerAdapter(this,driverName,currentLocation)
+        adapter = CustomerAdapter(this, driverName, currentLocation)
         binding.customerRv.layoutManager = LinearLayoutManager(this)
         binding.customerRv.setHasFixedSize(true)
         binding.customerRv.adapter = adapter
@@ -213,15 +216,24 @@ class MainActivity : AppCompatActivity() {
         //search view action
         val from = arrayOf(SearchManager.SUGGEST_COLUMN_TEXT_1)
         val to = intArrayOf(android.R.id.text1)
-        cursorAdapter = SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER)
-
+        cursorAdapter = SimpleCursorAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            null,
+            from,
+            to,
+            CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+        )
     }
 
     private fun initializeAccountProfile() {
         try {
             person = intent.extras!!.getSerializable(Constant.PERSON) as Person
-        }catch (e: Exception){
-            person = Person(currentUser?.displayName.toString(),currentUser?.photoUrl.toString(),currentUser?.email.toString())
+        } catch (e: Exception) {
+            person = Person(
+                currentUser.displayName.toString(), currentUser.photoUrl.toString(),
+                currentUser.email.toString()
+            )
         }
         val navigationView = binding.navigationView
         val header = navigationView.getHeaderView(0)
@@ -229,7 +241,7 @@ class MainActivity : AppCompatActivity() {
         val name = header.findViewById(R.id.account_name) as TextView
         val email = header.findViewById(R.id.account_email) as TextView
 
-        profileImg.load(person.profileUrl){
+        profileImg.load(person.profileUrl) {
             crossfade(true)
             transformations(CircleCropTransformation())
         }
@@ -248,22 +260,26 @@ class MainActivity : AppCompatActivity() {
             "no",
             "yes",
             null,
-            object : DialogInterface.OnClickListener{
+            object : DialogInterface.OnClickListener {
                 override fun onClick(p0: DialogInterface?, p1: Int) {
                     // log out account
                     googleSignInClient.signOut().addOnCompleteListener {
-                        if (it.isSuccessful){
+                        if (it.isSuccessful) {
                             //sign out firebase
                             firebaseAuth.signOut()
 
                             // saved log out state to shared preferences
-                            editor.putBoolean(Constant.LOGGED_IN_CONSTANT,false)
+                            editor.putBoolean(Constant.LOGGED_IN_CONSTANT, false)
                             editor.commit()
 
                             //exit app
                             finishAffinity()
-                        }else{
-                            Toast.makeText(this@MainActivity,"Sign out failed!",Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Sign out failed!",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
@@ -272,51 +288,33 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.option_menu,menu)
-        searchView = menu!!.findItem(R.id.search).actionView as SearchView
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item)){
-            true
-        }
-        when (item.itemId){
-            R.id.search -> searchViewAction()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     private fun searchViewAction() {
-        val cursor = MatrixCursor(arrayOf(BaseColumns._ID,SearchManager.SUGGEST_COLUMN_TEXT_1))
+        val cursor = MatrixCursor(arrayOf(BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1))
 
         // add person names to cursor
-        for (customer in customers){
-            cursor.addRow(arrayOf(customers.indexOf(customer),customer.name))
+        for (customer in customers) {
+            cursor.addRow(arrayOf(customers.indexOf(customer), customer.name))
         }
 
         try {
             cursorAdapter.changeCursor(cursor)
             searchView.suggestionsAdapter = cursorAdapter
-
-            searchView.setOnSuggestionListener(object : SearchView.OnSuggestionListener{
+            searchView.setOnSuggestionListener(object : SearchView.OnSuggestionListener {
                 override fun onSuggestionSelect(position: Int): Boolean {
                     println(position)
                     return true
                 }
 
                 override fun onSuggestionClick(position: Int): Boolean {
-
                     filter(customers.get(position).name)
-                    searchView.setQuery(customers.get(position).name,true)
+                    searchView.setQuery(customers.get(position).name, true)
 
                     return true
                 }
 
             })
 
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     filter(query)
                     return true
@@ -328,29 +326,27 @@ class MainActivity : AppCompatActivity() {
                 }
 
             })
-        }catch (e: Exception){}
+        } catch (e: Exception) {
+        }
     }
 
     private fun filter(newText: String?) {
         val filteredList = mutableListOf<Customer>()
 
-        for (cus in customers){
-            if (cus.name.lowercase(Locale.getDefault()).contains(newText!!.lowercase(Locale.getDefault()))){
+        for (cus in customers) {
+            if (cus.name.lowercase(Locale.getDefault())
+                    .contains(newText!!.lowercase(Locale.getDefault()))
+            ) {
                 filteredList.add(cus)
             }
         }
 
-        if (filteredList.isEmpty()){
-            Toast.makeText(this,"$newText is not found",Toast.LENGTH_SHORT).show()
+        if (filteredList.isEmpty()) {
+            Toast.makeText(this, "$newText is not found", Toast.LENGTH_SHORT).show()
         }
 
         adapter.submitList(filteredList)
 
-    }
-
-    override fun onBackPressed() {
-        //exit
-        showExitDialog()
     }
 
     private fun showExitDialog() {
@@ -361,7 +357,7 @@ class MainActivity : AppCompatActivity() {
             "No",
             "Yes",
             null,
-            object : DialogInterface.OnClickListener{
+            object : DialogInterface.OnClickListener {
                 override fun onClick(p0: DialogInterface?, p1: Int) {
                     finishAffinity()
                 }
@@ -369,4 +365,24 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun onBackPressed() {
+        //exit
+        showExitDialog()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.option_menu, menu)
+        searchView = menu!!.findItem(R.id.search).actionView as SearchView
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (toggle.onOptionsItemSelected(item)) {
+            true
+        }
+        when (item.itemId) {
+            R.id.search -> searchViewAction()
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }

@@ -1,36 +1,20 @@
 package com.codetest.taxidriver
 
-import android.Manifest
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.LocationManager
 import android.os.Bundle
-import android.os.Handler
-import android.provider.Settings
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.codetest.taxidriver.databinding.ActivityLocationBinding
 import com.codetest.taxidriver.utils.Constant
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.OnMapsSdkInitializedCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
-class LocationActivity : AppCompatActivity(), OnMapReadyCallback,OnMapsSdkInitializedCallback {
+class LocationActivity : AppCompatActivity(), OnMapReadyCallback, OnMapsSdkInitializedCallback {
     private lateinit var binding: ActivityLocationBinding
     private var longitude = 0.0
     private var latitude = 0.0
@@ -38,7 +22,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback,OnMapsSdkInitia
     private lateinit var customerName: String
     private lateinit var driverName: String
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private var REQUEST_TIME = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +33,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback,OnMapsSdkInitia
         // get data from previous activity
         getDataFromIntent()
 
+        //set activity title
         title = customerName
 
         MapsInitializer.initialize(this, MapsInitializer.Renderer.LATEST, this)
@@ -75,35 +59,23 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback,OnMapsSdkInitia
             googleMap.uiSettings.isCompassEnabled = true
 
             googleMap.addPolyline(
-                PolylineOptions()
-                    .add(
-                        currentLocation,
-                        customerLocation
-                    )
-                    .width(5f)
-                    .color(Color.RED)
-                    .geodesic(true)
+                PolylineOptions().add(
+                    currentLocation, customerLocation
+                ).width(5f).color(Color.RED).geodesic(true)
             )
 
             googleMap.addMarker(
-                MarkerOptions()
-                    .position(currentLocation)
-                    .title(driverName)
-                    .snippet("Driver")
+                MarkerOptions().position(currentLocation).title(driverName).snippet("Driver")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
             )
             googleMap.addMarker(
-                MarkerOptions()
-                    .position(customerLocation)
-                    .title(customerName)
-                    .snippet("Customer")
+                MarkerOptions().position(customerLocation).title(customerName).snippet("Customer")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
             )
 
             googleMap.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(
-                    currentLocation,
-                    10f
+                    currentLocation, 10f
                 )
             )
 
@@ -111,9 +83,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback,OnMapsSdkInitia
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
