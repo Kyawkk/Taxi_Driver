@@ -24,24 +24,25 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/loginBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="32dp"
         android:clickable="true"
         app:cardCornerRadius="30dp"
         app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="24dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:padding="10dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="10dp">
 
             <TextView
                 style="@style/TextAppearance.MaterialComponents.Button"
@@ -58,9 +59,9 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:visibility="visible"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/google_logo" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -72,6 +73,32 @@
         android:layout_height="match_parent"
         android:background="@color/purple_500"
         android:id="@+id/reveal"
+        android:translationZ="10dp"
         android:visibility="invisible"/>
+
+    <ImageView
+        android:id="@+id/app_logo_img"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/welcomeTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/welcomeTv"
+        style="@style/TextAppearance.MaterialComponents.Headline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="64dp"
+        android:textAlignment="center"
+        android:text="Welcome.\nFind your customers."
+        android:textFontWeight="600"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/loginBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -64,24 +64,6 @@ object Constant {
         locationRequest.fastestInterval = 2000
     }
 
-    private fun turnOnGPS(activity: Activity) {
-
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-        builder.setAlwaysShow(true)
-
-        val result = LocationServices.getSettingsClient(activity)
-            .checkLocationSettings(builder.build())
-
-        result.addOnCompleteListener {
-            val response = it.result
-        }
-    }
-
-    private fun isGPSEnabled(activity: Activity): Boolean{
-        var locationManger : LocationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManger.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    }
-
     fun getDistance(currentLocation: LatLng, customerLocation: LatLng): String{
         val distance = SphericalUtil.computeDistanceBetween(currentLocation,customerLocation)
         return String.format("%.2f", distance / 1000) + "km"

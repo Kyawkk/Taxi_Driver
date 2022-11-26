@@ -34,9 +34,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, OnMapsSdkIniti
 
         setContentView(binding.root)
 
-        //request permission
-        Constant.requestLocationPermission(this)
-
         // get data from previous activity
         getDataFromIntent()
 
@@ -88,32 +85,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, OnMapsSdkIniti
 
         })
     }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 100){
-            if (grantResults[0] != 0){
-                Constant.showMaterialDialog(
-                    this,
-                    "Allow Location Permission",
-                    "You have to allow location permission to check the distance between you and your customer",
-                    "",
-                    "Ok",
-                    null,
-                    object : DialogInterface.OnClickListener{
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            Constant.requestLocationPermission(this@LocationActivity)
-                        }
-                    }
-                )
-            }
-        }
-    }
-
     override fun onMapsSdkInitialized(p0: MapsInitializer.Renderer) {
         // do nothing here
     }

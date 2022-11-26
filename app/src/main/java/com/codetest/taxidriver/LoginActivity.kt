@@ -11,6 +11,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.codetest.taxidriver.databinding.ActivityLoginBinding
@@ -49,6 +51,9 @@ class LoginActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences("shared_pref", Context.MODE_PRIVATE)
         editor = sharedPreferences.edit()
 
+        //enter animation
+        enterAnimation(binding.appLogoImg,binding.welcomeTv,binding.loginBtn)
+
         // initialize progress dialog
         progressDialog = ProgressDialog(this)
         progressDialog.setCancelable(false)
@@ -63,6 +68,48 @@ class LoginActivity : AppCompatActivity() {
 
         binding.loginBtn.setOnClickListener {
             logInWithGoogle()
+        }
+    }
+
+    private fun enterAnimation(vararg views: View) {
+        var delay = 100L
+        for (view in views){
+            val animation = AnimationUtils.loadAnimation(this,R.anim.enter_anim)
+            delay += 100
+            animation.startOffset = delay
+            animation.duration = 500
+            view.startAnimation(animation)
+        }
+    }
+
+    private fun exitAnimation(vararg views: View, onFinished: () -> Unit){
+        var delay = 100L
+        for (view in views){
+            delay += 100
+
+            val animation = AnimationUtils.loadAnimation(this,R.anim.exit_anim)
+            animation.startOffset = delay
+            animation.duration = 500
+
+            animation.setAnimationListener(object : Animation.AnimationListener{
+                override fun onAnimationStart(p0: Animation?) {
+
+                }
+
+                override fun onAnimationEnd(p0: Animation?) {
+                    if (views.indexOf(view) == views.size - 1)
+                        onFinished()
+
+                    // hide view after exit animation
+                    view.visibility = View.INVISIBLE
+                }
+
+                override fun onAnimationRepeat(p0: Animation?) {
+
+                }
+            })
+
+            view.startAnimation(animation)
         }
     }
 
@@ -113,6 +160,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
         revealAnim.duration = 400
+        println("reveal start:")
         revealAnim.start()
     }
 
@@ -135,15 +183,20 @@ class LoginActivity : AppCompatActivity() {
         //hide progress dialog
         hideProgressDialog()
 
-        // go to another activity after reveal animation
-        revealAnimation({
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this)
-            val intent =
-                Intent(this, MainActivity::class.java)
-            intent.putExtra(Constant.PERSON, person)
-            startActivity(intent,options.toBundle())
-            //binding.reveal.visibility = View.INVISIBLE
+        //start exit animation
+        exitAnimation(binding.loginBtn,binding.welcomeTv,binding.appLogoImg, onFinished = {
+            // go to another activity after reveal animation
+            revealAnimation({
+                val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this)
+                val intent =
+                    Intent(this, MainActivity::class.java)
+                intent.putExtra(Constant.PERSON, person)
+                startActivity(intent,options.toBundle())
+                //binding.reveal.visibility = View.INVISIBLE
+            })
         })
+
+
     }
 
     private fun firebaseAuthWithGoogleAccount(account: GoogleSignInAccount) {

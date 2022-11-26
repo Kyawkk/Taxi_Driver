@@ -26,6 +26,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.cursoradapter.widget.SimpleCursorAdapter
@@ -67,7 +68,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var currentUser: FirebaseUser
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-    private var isGranted = false
     private var driverName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
