@@ -1,13 +1,18 @@
 package com.codetest.taxidriver
 
+import android.Manifest
 import android.app.SearchManager
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
+import android.content.pm.PackageManager
 import android.database.MatrixCursor
 import android.os.Bundle
+import android.os.Handler
 import android.provider.BaseColumns
+import android.util.AttributeSet
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -17,10 +22,12 @@ import android.widget.CursorAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -60,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var currentUser: FirebaseUser
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private var isGranted = false
     private var driverName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +82,8 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
+        requestPermission()
+
         //initialize firestore
         initializeFireStore()
 
@@ -81,6 +91,7 @@ class MainActivity : AppCompatActivity() {
         loadDataFromFireStore()
 
         val drawerLayout = binding.drawerLayout
+        actionBar?.setDisplayHomeAsUpEnabled(true)
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -91,9 +102,6 @@ class MainActivity : AppCompatActivity() {
 
         //load account data
         initializeAccountProfile()
-
-        // show loading layout before customers are loaded
-        showLoading()
 
         //swipe refresh layout action
         swipeRefreshLayoutAction()
@@ -146,15 +154,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadDataFromFireStore() {
+        // show loading layout before customers are loaded
+        showLoading()
+
         customers = mutableListOf<Customer>()
         customers.clear()
 
         db.collection("customers")
             .get()
             .addOnCompleteListener {
+                println("it.isSuccessful: ${it.isSuccessful}")
                 if (it.isSuccessful) {
                     for (customer in it.result) {
-
+                        println(customer.data.get("name"))
                         val data = customer.data
                         val name = data.get("name").toString()
                         val phone = data.get("phone").toString()
@@ -172,6 +184,8 @@ class MainActivity : AppCompatActivity() {
                         hideLoading()
                         setUpCustomerRecyclerView(customers, it)
                     })
+
+
                 }
             }
             .addOnFailureListener {
@@ -374,6 +388,42 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.option_menu, menu)
         searchView = menu!!.findItem(R.id.search).actionView as SearchView
         return true
+    }
+
+    private fun requestPermission(){
+        if (!Constant.isLocationEnabled(this)){
+            Constant.requestPermission(this)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.size > 0){
+            if(requestCode == 100){
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    loadDataFromFireStore()
+                }
+                else{
+                    Constant.showMaterialDialog(
+                        this,
+                        "Location Permission Required",
+                        "You have to allow location permission to check the distance between you and your customer.",
+                        "",
+                        "Exit",
+                        null,
+                        object : DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                finishAffinity()
+                            }
+                        }
+                    )
+                }
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -9,6 +9,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
@@ -34,34 +35,25 @@ object Constant {
         initializeLocationRequest()
 
         // check permission
-        if (ActivityCompat.checkSelfPermission(activity,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if (isGPSEnabled(activity)){
-                LocationServices.getFusedLocationProviderClient(activity)
-                    .requestLocationUpdates(locationRequest,object : LocationCallback() {
-                        override fun onLocationResult(p0: LocationResult) {
-                            super.onLocationResult(p0)
+        LocationServices.getFusedLocationProviderClient(activity)
+            .requestLocationUpdates(locationRequest,object : LocationCallback() {
+                override fun onLocationResult(p0: LocationResult) {
+                    super.onLocationResult(p0)
 
-                            LocationServices.getFusedLocationProviderClient(activity)
-                                .removeLocationUpdates(this)
+                    LocationServices.getFusedLocationProviderClient(activity)
+                        .removeLocationUpdates(this)
 
-                            if (p0 != null && p0.locations.size > 0){
-                                val index = p0.locations.size - 1
-                                val latitude = p0.locations.get(index).latitude
-                                val longitude = p0.locations.get(index).longitude
+                    if (p0 != null && p0.locations.size > 0){
+                        val index = p0.locations.size - 1
+                        CURRENT_LATITUDE = p0.locations.get(index).latitude
+                        CURRENT_LONGITUDE = p0.locations.get(index).longitude
 
-                                onReceivedLatLng(LatLng(latitude, longitude))
-                            }
-                        }
+                    }
 
-                    },Looper.getMainLooper())
-            }
-            else{
-                turnOnGPS(activity)
-            }
-        }
-        else{
-            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),100)
-        }
+                    onReceivedLatLng(LatLng(CURRENT_LATITUDE, CURRENT_LONGITUDE))
+                }
+
+            },Looper.getMainLooper())
 
         return LatLng(0.0,0.0)
     }
@@ -102,6 +94,45 @@ object Constant {
         builder.setPositiveButton(posTitle,posAction)
         builder.setNegativeButton(negTitle,negAction)
         builder.create().show()
+    }
+
+    fun requestLocationPermission(activity: Activity){
+        println("location: ${isLocationEnabled(activity)}")
+        if (isLocationEnabled(activity)){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    activity,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )){
+                showMaterialDialog(
+                    activity,
+                    "Location Permission",
+                    "You have to allow location permission to check the distance between you and your customer.",
+                    "",
+                    "OK",
+                    null,
+                    object : DialogInterface.OnClickListener{
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            requestPermission(activity)
+                        }
+                    }
+                )
+            }
+            else{
+                requestPermission(activity)
+            }
+        }
+    }
+
+     fun isLocationEnabled(activity: Activity): Boolean{
+        return (ActivityCompat.checkSelfPermission(activity,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+    }
+
+    fun requestPermission(activity: Activity){
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            100,
+        )
     }
 
 }

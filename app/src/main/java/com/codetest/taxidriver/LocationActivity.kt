@@ -1,7 +1,9 @@
 package com.codetest.taxidriver
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import com.codetest.taxidriver.databinding.ActivityLocationBinding
 import com.codetest.taxidriver.utils.Constant
@@ -21,14 +23,19 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, OnMapsSdkIniti
     private lateinit var profileUrl: String
     private lateinit var customerName: String
     private lateinit var driverName: String
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLocationBinding.inflate(layoutInflater)
+
+        with(window){
+            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        }
+
         setContentView(binding.root)
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        //request permission
+        Constant.requestLocationPermission(this)
 
         // get data from previous activity
         getDataFromIntent()
@@ -83,12 +90,29 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback, OnMapsSdkIniti
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
+        if (requestCode == 100){
+            if (grantResults[0] != 0){
+                Constant.showMaterialDialog(
+                    this,
+                    "Allow Location Permission",
+                    "You have to allow location permission to check the distance between you and your customer",
+                    "",
+                    "Ok",
+                    null,
+                    object : DialogInterface.OnClickListener{
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            Constant.requestLocationPermission(this@LocationActivity)
+                        }
+                    }
+                )
+            }
+        }
     }
-
 
     override fun onMapsSdkInitialized(p0: MapsInitializer.Renderer) {
         // do nothing here

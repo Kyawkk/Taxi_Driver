@@ -15,4 +15,7 @@
 
     <color name="dividerColorLight">#C3C3C3</color>
     <color name="dividerColorDark">#8A8A8A</color>
+
+    <color name="itemBackgroundLight">#FAF9F9</color>
+    <color name="itemBackgroundDark">#303030</color>
 </resources>

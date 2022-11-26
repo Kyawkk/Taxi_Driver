@@ -17,7 +17,7 @@
         <!-- Customize your theme here. -->
 
         <item name="dividerColor">@color/dividerColorLight</item>
-        <item name="itemCardElevation">1dp</item>
+        <item name="itemBackgroundColor">@color/itemBackgroundLight</item>
 
     </style>
 

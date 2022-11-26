@@ -15,7 +15,7 @@
         <!-- Customize your theme here. -->
 
         <item name="dividerColor">@color/dividerColorDark</item>
-        <item name="itemCardElevation">@dimen/card_elevation</item>
+        <item name="itemBackgroundColor">@color/itemBackgroundDark</item>
     </style>
 
     <!-- Login Activity Theme -->
