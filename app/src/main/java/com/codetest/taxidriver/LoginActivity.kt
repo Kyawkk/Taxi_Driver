@@ -14,6 +14,8 @@ import android.view.ViewAnimationUtils
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.core.app.ActivityOptionsCompat
 import com.codetest.taxidriver.databinding.ActivityLoginBinding
 import com.codetest.taxidriver.model.Person
