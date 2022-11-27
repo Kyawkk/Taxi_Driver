@@ -22,6 +22,7 @@ class CustomerAdapter(activity: Activity, driverName: String, currentLocation: L
 
     class MyViewHolder(binding: CustomerItemBinding) : RecyclerView.ViewHolder(binding.root) {
         val binding = binding
+
         fun bind(customer: Customer,currentLocation: LatLng) {
 
             val customerLocation = LatLng(customer.latLog.latitude, customer.latLog.longitude)

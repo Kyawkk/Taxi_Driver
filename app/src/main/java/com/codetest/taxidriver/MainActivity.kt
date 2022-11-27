@@ -37,6 +37,7 @@ import coil.transform.CircleCropTransformation
 import com.codetest.taxidriver.adapter.CustomerAdapter
 import com.codetest.taxidriver.databinding.ActivityMainBinding
 import com.codetest.taxidriver.model.Customer
+import com.codetest.taxidriver.model.CustomerFullModel
 import com.codetest.taxidriver.model.Person
 import com.codetest.taxidriver.utils.Constant
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -225,6 +226,11 @@ class MainActivity : AppCompatActivity() {
         binding.customerRv.layoutManager = LinearLayoutManager(this)
         binding.customerRv.setHasFixedSize(true)
         binding.customerRv.adapter = adapter
+
+        //sort customers by distance
+        customers.sortBy {
+            Constant.getDistance(currentLocation,LatLng(it.latLog.latitude,it.latLog.longitude))
+        }
         adapter.submitList(customers)
 
         //search view action
