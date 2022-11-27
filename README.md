@@ -3,15 +3,14 @@ Taxi Driver
 
 ![Alt text](https://github.com/Kyawkk/Taxi_Driver/blob/master/screenshots/design.png?raw=true "a title")
 
-###Overview
-
+### Overview
 ![Alt text](https://github.com/Kyawkk/Taxi_Driver/blob/master/screenshots/design.gif?raw=true "a title")
 
 ### Our Goal
 An android app for taxi drivers to help them easily find their customer. They can easily find their customer with one tap login and
 the app is so simple to use with clean interface.
 
-### What You Will See
+### How To Use
 - Authentication using Google Sign In.
 - See customers list order by distance from your current location.
 - Real time search customers by their name.
