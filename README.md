@@ -12,7 +12,7 @@ the app is so simple to use with clean interface.
 
 ### Installation Guide
 - Clone the repository to your local computer that already installed Android Studio.
-- Open the project with your android studio
+- Open the project in android studio
 
 ### What will you see
 - Authenticate with google account.
