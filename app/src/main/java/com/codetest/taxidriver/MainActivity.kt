@@ -84,6 +84,9 @@ class MainActivity : AppCompatActivity() {
 
         requestPermission()
 
+        // show loading layout before customers are loaded
+        showLoading()
+
         //initialize firestore
         initializeFireStore()
 
@@ -153,8 +156,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadDataFromFireStore() {
-        // show loading layout before customers are loaded
-        showLoading()
 
         customers = mutableListOf<Customer>()
         customers.clear()
