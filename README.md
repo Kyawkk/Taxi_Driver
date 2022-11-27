@@ -4,7 +4,7 @@ Taxi Driver
 ![Alt text](https://github.com/Kyawkk/Taxi_Driver/blob/d62530976d62e1c70a28ee4a4ec74234988fe22b/screenshots/design.png "a title")
 
 # Preview
-![Alt text](https://github.com/Kyawkk/Taxi_Driver/blob/master/screenshots/design.gif?raw=true "a title")
+![Alt text](https://github.com/Kyawkk/Taxi_Driver/blob/d62530976d62e1c70a28ee4a4ec74234988fe22b/screenshots/design.gif "a title")
 
 ### Our Goal
 An android app for taxi drivers to help them easily find their customer. They can easily find their customer with one tap login and
