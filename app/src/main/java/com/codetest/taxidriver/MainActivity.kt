@@ -145,7 +145,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLoading() {
-        binding.swipeRefreshLayout.isEnabled = false
         binding.loadingLayout.visibility = View.VISIBLE
     }
 
