@@ -8,7 +8,7 @@ Taxi Driver
 
 ### Our Goal
 An android app for taxi drivers to help them easily find their customer. They can easily find their customer with one tap login and
-the app is so simple to use with clean interface.
+the app is so simple to use with clean user interface.
 
 ### Installation Guide
 - Clone the repository to your local computer that already installed Android Studio.
