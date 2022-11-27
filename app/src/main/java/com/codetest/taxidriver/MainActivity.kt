@@ -37,7 +37,6 @@ import coil.transform.CircleCropTransformation
 import com.codetest.taxidriver.adapter.CustomerAdapter
 import com.codetest.taxidriver.databinding.ActivityMainBinding
 import com.codetest.taxidriver.model.Customer
-import com.codetest.taxidriver.model.CustomerFullModel
 import com.codetest.taxidriver.model.Person
 import com.codetest.taxidriver.utils.Constant
 import com.google.android.gms.auth.api.signin.GoogleSignIn
